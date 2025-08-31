@@ -14,11 +14,49 @@ function openModal() {
 }
 function closeModal() { document.getElementById('addLookModal').classList.remove('active'); }
 function handleImageChange(event) {
-    const file = event.target.files[0]; if (!file) return;
+    const file = event.target.files[0];
+    if (!file) return;
+
     const reader = new FileReader();
-    reader.onload = e => { document.getElementById('modalImagePreview').src = e.target.result; document.getElementById('modalImagePreview').style.display = ''; document.getElementById('modalImagePreview').alt = 'Imagem selecionada'; };
+    reader.onload = function (e) {
+        const img = new window.Image();
+        img.onload = function () {
+            // -- REDIMENSIONAR --
+            const MAX_WIDTH = 700; // ajuste como quiser
+            const MAX_HEIGHT = 700;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+                if (width > height) {
+                    height = Math.round(height * (MAX_WIDTH / width));
+                    width = MAX_WIDTH;
+                } else {
+                    width = Math.round(width * (MAX_HEIGHT / height));
+                    height = MAX_HEIGHT;
+                }
+            }
+            // -- CANVAS --
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // -- JPEG compacto --
+            const base64 = canvas.toDataURL('image/jpeg', 0.85); // 0.85 é qualidade (0 a 1)
+            document.getElementById('modalImagePreview').src = base64;
+            document.getElementById('modalImagePreview').style.display = '';
+            document.getElementById('modalImagePreview').alt = 'Imagem selecionada';
+        };
+        img.onerror = function () {
+            alert("Erro ao processar imagem.");
+        }
+        img.src = e.target.result;
+    };
     reader.readAsDataURL(file);
 }
+
 function abrirDataPicker() { document.getElementById('inputDate').showPicker(); }
 function atualizarData() {
     const val = document.getElementById('inputDate').value;
@@ -77,7 +115,7 @@ function renderLooksList() {
     emptyText.style.display = 'none';
     looksGrid.innerHTML = filtered.map(look => `
         <div class="lookCard" onclick='openViewModal(${JSON.stringify(look)})'>
-          <img src="${look.imagem_uri || 'https://placehold.co/85x85?text=Look'}" alt="Look" />
+          <img src="${look.imagem_uri || '../assets/clothes-placeholder.jpg'}" alt="Look" />
           <div class="lookCard-title">${look.titulo}</div>
           <div class="lookCard-date">${formatDateBR(look.data_uso)}</div>
           ${look.descricao ? `<div class="lookCard-desc">${look.descricao}</div>` : ""}
