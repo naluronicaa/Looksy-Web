@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Todos os Looks</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="shortcut icon" href="./assets/icons/favicon2.ico" type="image/x-icon">
+  <link rel="stylesheet" href="./styles/looks.css">
+  <link rel="stylesheet" href="./styles/navbar.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <span class="title">Todos os Looks</span>
+      <button class="uploadButton" onclick="openModal()">
+        <i class="bi bi-camera"></i> Enviar Look
+      </button>
+    </div>
+    <input class="searchInput" placeholder="Buscar look..." oninput="renderLooksList()" id="searchInput" />
+    <div id="looksGrid" class="gridContainer"></div>
+    <div id="emptyText" class="emptyText" style="display:none;">Você ainda não possui nenhum look salvo!</div>
+  </div>
+
+  <!-- Modal Cadastro Look -->
+  <div class="modalOverlay" id="addLookModal">
+    <form class="modalContent" id="addLookForm" onsubmit="salvarLook(event)">
+      <div class="modalTitle">Novo Look</div>
+      <label class="imagePicker">
+        <i class="bi bi-image"></i> Selecionar Imagem
+        <input type="file" accept="image/*" style="display:none" id="inputImage" onchange="handleImageChange(event)">
+      </label>
+      <img src="" id="modalImagePreview" class="modalImage" style="display:none;">
+      <input class="input" placeholder="Título do Look" required maxlength="40" id="inputTitulo" />
+      <textarea class="modalTextArea" placeholder="Descrição" maxlength="130" id="inputDesc"></textarea>
+      <span class="label">Data de uso</span>
+      <button type="button" class="dateButton" onclick="abrirDataPicker()">
+        <i class="bi bi-calendar2-week"></i>
+        <span id="dataSelecionada"></span>
+      </button>
+      <input type="date" id="inputDate" class="dateInput" onchange="atualizarData()" required />
+      <button class="saveButton" type="submit">Salvar</button>
+      <span class="cancelText" onclick="closeModal()">Cancelar</span>
+    </form>
+  </div>
+
+  <!-- Modal Visualizar & Excluir -->
+  <div class="modalOverlay2" id="viewLookModal">
+    <div class="modalContent2" id="viewLookContent">
+      <button class="closeBtn" onclick="closeViewModal()">
+        <i class="bi bi-x-circle-fill" style="color:red;font-size:24px"></i>
+      </button>
+      <img id="viewModalImg" class="modalImgBig" src="" alt="Look">
+      <div class="modalTitle2" id="viewModalTitle"></div>
+      <div class="modalDesc2" id="viewModalDesc"></div>
+      <div class="modalDesc2" id="viewModalDate"></div>
+      <button class="deleteButton" onclick="confirmDeleteLook()">
+        <i class="bi bi-trash"></i> Excluir
+      </button>
+    </div>
+  </div>
+
+    <div class="navbar">
+        <a href="home.html" class="nav-item" id="navHome">
+            <i class="bi bi-house nav-icon"></i>
+        </a>
+        <a href="looks.html" class="nav-item" id="navLooks">
+            <i class="bi bi-bookmark-fill nav-icon active"></i>
+        </a>
+        <a href="calendar.html" class="nav-item" id="navCalendar">
+            <i class="bi bi-calendar-heart-fill nav-icon"></i>
+        </a>
+        <a href="index.html" class="nav-item" id="navCalendar">
+            <i class="bi bi-box-arrow-in-right nav-icon"></i>
+        </a>
+    </div>
+
+  <script src="./scripts/looks.js"></script>
+</body>
+</html>

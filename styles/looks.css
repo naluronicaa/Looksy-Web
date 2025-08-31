@@ -1,0 +1,376 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background: #fff;
+    color: #331307;
+    font-family: 'Montserrat', Arial, sans-serif;
+    overflow-x: hidden !important; 
+}
+
+body {
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 430px;
+    margin: 0 auto;
+    padding: 24px 0 90px 0; 
+    min-height: 100vh;
+    box-sizing: border-box;
+    background: #fff;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px 0 16px;
+    margin-bottom: 12px;
+    box-sizing: border-box;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #966D46;
+}
+
+.uploadButton {
+    display: flex;
+    align-items: center;
+    background: #966D46;
+    color: #fff;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 7px 14px;
+    border: none;
+    cursor: pointer;
+    gap: 6px;
+    transition: background 0.14s;
+}
+
+.uploadButton:hover {
+    background: #a67942;
+}
+
+.searchInput {
+    border: 1.5px solid #966D46;
+    border-radius: 10px;
+    padding: 9px 11px;
+    margin: 0 16px 12px 16px;
+    font-size: 15px;
+    color: #331307;
+    width: calc(100% - 32px);
+    box-sizing: border-box;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 12px;
+    padding: 0 12px; /* DIMINUI o padding pra garantir! */
+    box-sizing: border-box;
+    margin: 0 auto;
+    justify-items: center;
+    align-items: flex-start;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.lookCard {
+    background: #fff7f0;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px #e2be9f19;
+    width: 100%;  /* ISSO GARANTE QUE O CARD NUNCA SAI DO GRID */
+    max-width: 170px;
+    min-width: 0;
+    margin-bottom: 0;
+    padding: 13px 7px 10px 7px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.lookCard img {
+    width: 88px;
+    height: 88px;
+    border-radius: 9px;
+    object-fit: cover;
+    margin-bottom: 7px;
+    border: 1.5px solid #e6cfb8;
+    background: #fff;
+}
+
+.lookCard-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #966D46;
+    margin-bottom: 2px;
+    text-align: center;
+    word-break: break-word;
+}
+
+.lookCard-date {
+    color: #b49a88;
+    font-size: 0.9em;
+    margin-bottom: 2px;
+}
+
+.lookCard-desc {
+    color: #bca08e;
+    font-size: 0.91em;
+    text-align: center;
+    max-width: 120px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.emptyText {
+    color: #bca08e;
+    font-size: 1em;
+    text-align: center;
+    margin: 36px 0;
+}
+
+/* MODAL (Cadastro) */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.58);
+    display: none;
+    z-index: 90;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalOverlay.active {
+    display: flex;
+}
+
+.modalContent {
+    background: #fff;
+    border-radius: 16px;
+    padding: 22px 18px 18px 18px;
+    min-width: 300px;
+    width: 96vw;
+    max-width: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: modalShow 0.2s;
+}
+
+@keyframes modalShow {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.modalTitle {
+    font-size: 18px;
+    font-weight: bold;
+    color: #331307;
+    margin-bottom: 13px;
+}
+
+.imagePicker {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 9px;
+    font-weight: bold;
+    color: #966D46;
+    border: 1px solid #f2d9be;
+    border-radius: 7px;
+    padding: 7px 14px;
+    gap: 8px;
+    background: #faf4ed;
+    transition: background 0.14s;
+}
+
+.imagePicker:hover {
+    background: #fff3e0;
+}
+
+.modalImage {
+    width: 100%;
+    max-width: 170px;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    margin-bottom: 11px;
+    object-fit: cover;
+    border: 1.5px solid #ecd7c6;
+}
+
+.input,
+.modalTextArea {
+    border: 1.2px solid #966D46;
+    border-radius: 10px;
+    padding: 9px 11px;
+    width: 100%;
+    margin-bottom: 10px;
+    color: #331307;
+    font-size: 15px;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.modalTextArea {
+    height: 68px;
+    resize: vertical;
+}
+
+.label {
+    color: #966D46;
+    font-weight: bold;
+    font-size: 15px;
+    margin-top: 12px;
+    margin-bottom: 3px;
+    align-self: flex-start;
+}
+
+.dateButton {
+    display: flex;
+    align-items: center;
+    border: 1.2px solid #966D46;
+    border-radius: 10px;
+    background: #fff;
+    padding: 12px 16px;
+    margin-bottom: 13px;
+    margin-top: 2px;
+    min-width: 140px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: #331307;
+    gap: 8px;
+}
+
+.saveButton {
+    background: #966D46;
+    color: #fff;
+    font-weight: bold;
+    padding: 11px 35px;
+    border-radius: 10px;
+    margin-top: 7px;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.13s;
+}
+
+.saveButton:hover {
+    background: #a67942;
+}
+
+.cancelText {
+    color: #966D46;
+    font-size: 15px;
+    margin-top: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.dateInput {
+    display: none;
+}
+
+/* MODAL DE VISUALIZAÇÃO E EXCLUIR */
+.modalOverlay2 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.62);
+    display: none;
+    z-index: 99;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalOverlay2.active {
+    display: flex;
+}
+
+.modalContent2 {
+    background: #fff;
+    border-radius: 16px;
+    padding: 22px 20px 20px 20px;
+    width: 94vw;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: modalShow 0.2s;
+    position: relative;
+}
+
+.closeBtn {
+    position: absolute;
+    top: 8px;
+    right: 11px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.modalImgBig {
+    width: 90%;
+    max-width: 180px;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    object-fit: cover;
+    margin: 12px 0 13px 0;
+    border: 1.5px solid #ecd7c6;
+}
+
+.modalTitle2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #966D46;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.modalDesc2 {
+    color: #bca08e;
+    margin-bottom: 4px;
+    text-align: center;
+}
+
+.deleteButton {
+    margin-top: 20px;
+    background: #966D46;
+    color: #fff;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.deleteButton:hover {
+    background: #660b0b;
+}
+

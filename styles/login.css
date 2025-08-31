@@ -1,0 +1,130 @@
+:root {
+    --brand: #966D46;
+    --brand-900: #7f5937;
+    --accent: #af845c;
+    --text: #333333;
+    --muted: #666666;
+    --white: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: 'Raleway', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--text);
+    background-color: #faf8f6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.bg {
+    position: fixed;
+    inset: 0;
+    background-image: url('../assets/bg.jpg');
+    background-size: cover;
+    background-position: center;
+    z-index: -1;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    padding: 2rem;
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+
+.brand {
+    margin: 4px 0 0;
+    font-size: clamp(28px, 6vw, 40px);
+    font-weight: 900;
+    color: var(--brand);
+    letter-spacing: 0.5px;
+}
+
+.slogan {
+    margin: 2px 0 14px;
+    font-size: clamp(12px, 2.8vw, 16px);
+    font-style: italic;
+    color: var(--accent);
+}
+
+.welcome {
+    margin: 8px 0 14px;
+    font-size: clamp(18px, 4.8vw, 22px);
+    font-weight: 700;
+    color: var(--brand-900);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 12px 18px;
+    width: min(420px, 100%);
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 800;
+    text-transform: lowercase;
+    letter-spacing: 0.4px;
+    transition: transform .06s ease, box-shadow .2s ease, background-color .2s ease;
+    user-select: none;
+    will-change: transform;
+}
+
+.btn:active {
+    transform: translateY(1px) scale(0.995);
+}
+
+.btn-primary {
+    background: var(--brand);
+    color: var(--white);
+    box-shadow: 0 6px 14px rgba(150, 109, 70, 0.35);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.btn-primary:hover {
+    background: #8e633f;
+}
+
+.btn-primary:focus-visible {
+    outline: 3px solid rgba(150, 109, 70, 0.35);
+    outline-offset: 2px;
+}
+
+.pill {
+    font-size: 12px;
+    background: rgba(150, 109, 70, 0.08);
+    color: var(--brand-900);
+    padding: 6px 10px;
+    border-radius: 999px;
+    margin-bottom: 2px;
+}
+
+footer {
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+}
