@@ -263,7 +263,7 @@ body {
     width: 100vw;
     height: 100vh;
     z-index: 999;
-    background: rgba(0, 0, 0, 0.93);
+    background: rgba(0, 0, 0, 0.62);
     align-items: center;
     justify-content: center;
 }
@@ -273,6 +273,7 @@ body {
 }
 
 .modalImgWrap {
+    top: -20px;
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -282,7 +283,6 @@ body {
 .modalImgBig {
     max-width: 88vw;
     max-height: 70vh;
-
     object-fit: cover;
     width: auto;
     height: auto;
