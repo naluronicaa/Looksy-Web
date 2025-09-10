@@ -1,164 +1,176 @@
-// =================== CALENDÁRIO =======================
-const monthNames = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
-const weekDays = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-
-function getLooks() {
-    const data = localStorage.getItem('looksDemo');
-    return data ? JSON.parse(data) : [];
+// ----- LOCALSTORAGE -----
+function getLooks() { 
+    const data = localStorage.getItem('looksDemo'); 
+    return data ? JSON.parse(data) : []; 
 }
-function groupLooksByDate(looks) {
-    const byDate = {};
-    looks.forEach(look => {
-        if (look.data_uso) {
-            const date = look.data_uso.length > 10 ? look.data_uso.slice(0, 10) : look.data_uso;
-            if (!byDate[date]) byDate[date] = [];
-            byDate[date].push(look);
-        }
-    });
-    return byDate;
+function saveLooks(looks) { 
+    localStorage.setItem('looksDemo', JSON.stringify(looks)); 
 }
 
-let today = new Date();
-let currentMonth = today.getMonth();
-let currentYear = today.getFullYear();
-let selectedDay = null;
-let looksPorData = groupLooksByDate(getLooks());
+// ----- MODAL CADASTRO -----
+function openModal() {
+    document.getElementById('addLookModal').classList.add('active');
+    document.getElementById('addLookForm').reset();
+    document.getElementById('modalImagePreview').style.display = 'none';
+    const hoje = new Date();
+    const yyyy = hoje.getFullYear(); 
+    const mm = String(hoje.getMonth() + 1).padStart(2, '0'); 
+    const dd = String(hoje.getDate()).padStart(2, '0');
+    document.getElementById('inputDate').value = `${yyyy}-${mm}-${dd}`;
+    document.getElementById('dataSelecionada').textContent = `${dd}/${mm}/${yyyy}`;
+}
+function closeModal() { 
+    document.getElementById('addLookModal').classList.remove('active'); 
+}
+function handleImageChange(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-function renderCalendar(month, year) {
-    const calendarBody = document.getElementById('calendarBody');
-    calendarBody.innerHTML = "";
-    document.getElementById('monthName').textContent = `${monthNames[month][0].toUpperCase() + monthNames[month].slice(1)} ${year}`;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const img = new window.Image();
+        img.onload = function () {
+            // -- REDIMENSIONAR --
+            const MAX_WIDTH = 700; 
+            const MAX_HEIGHT = 700;
+            let width = img.width;
+            let height = img.height;
 
-    const firstDay = new Date(year, month, 1).getDay(); // 0=domingo
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    let html = '';
-    let day = 1;
-    for (let w = 0; w < 6; w++) {
-        let tr = '<tr>';
-        for (let d = 0; d < 7; d++) {
-            if (w === 0 && d < firstDay) {
-                tr += `<td><span class="calendar-day disabled"></span></td>`;
-            } else if (day > daysInMonth) {
-                tr += `<td><span class="calendar-day disabled"></span></td>`;
-            } else {
-                let classes = ['calendar-day'];
-                let dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-
-                // Hoje
-                const isToday = (
-                    day === today.getDate() &&
-                    month === today.getMonth() &&
-                    year === today.getFullYear()
-                );
-                if (isToday) classes.push('today');
-                // Selecionado
-                if (selectedDay &&
-                    day === selectedDay.getDate() &&
-                    month === selectedDay.getMonth() &&
-                    year === selectedDay.getFullYear()) {
-                    classes.push('selected');
+            if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+                if (width > height) {
+                    height = Math.round(height * (MAX_WIDTH / width));
+                    width = MAX_WIDTH;
+                } else {
+                    width = Math.round(width * (MAX_HEIGHT / height));
+                    height = MAX_HEIGHT;
                 }
-                // Tem look
-                if (looksPorData[dateStr]) {
-                    classes.push('has-look');
-                }
-                tr += `<td>
-                  <button type="button"
-                    class="${classes.join(' ')}"
-                    data-date="${dateStr}"
-                    tabindex="0"
-                    onclick="handleDayClick('${dateStr}')"
-                  >
-                    ${day}
-                    <span class="look-dot"></span>
-                  </button>
-                </td>`;
-                day++;
             }
+            // -- CANVAS --
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+
+            // -- JPEG compacto --
+            const base64 = canvas.toDataURL('image/jpeg', 0.85); 
+            document.getElementById('modalImagePreview').src = base64;
+            document.getElementById('modalImagePreview').style.display = '';
+            document.getElementById('modalImagePreview').alt = 'Imagem selecionada';
+        };
+        img.onerror = function () {
+            alert("Erro ao processar imagem.");
         }
-        tr += '</tr>';
-        html += tr;
-        if (day > daysInMonth) break;
-    }
-    calendarBody.innerHTML = html;
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
 }
 
-
-function handleDayClick(dateStr) {
-    const [year, month, day] = dateStr.split('-').map(Number);
-    selectedDay = new Date(year, month - 1, day); // <--- garantido local!
-    renderCalendar(currentMonth, currentYear);
-    renderLooksForDate(selectedDay);
+function abrirDataPicker() { 
+    document.getElementById('inputDate').showPicker(); 
 }
-
-// Navegação mês
-document.getElementById('prevMonth').onclick = () => {
-    if (currentMonth === 0) { currentMonth = 11; currentYear--; }
-    else currentMonth--;
-    selectedDay = null;
-    renderCalendar(currentMonth, currentYear);
-    document.getElementById('lookContainer').innerHTML = "";
-};
-document.getElementById('nextMonth').onclick = () => {
-    if (currentMonth === 11) { currentMonth = 0; currentYear++; }
-    else currentMonth++;
-    selectedDay = null;
-    renderCalendar(currentMonth, currentYear);
-    document.getElementById('lookContainer').innerHTML = "";
-};
-
-function renderLooksForDate(dateObj) {
-    const lookContainer = document.getElementById('lookContainer');
-    const yyyy = dateObj.getFullYear(), mm = String(dateObj.getMonth() + 1).padStart(2, '0'), dd = String(dateObj.getDate()).padStart(2, '0');
-    const key = `${yyyy}-${mm}-${dd}`;
-    lookContainer.innerHTML = '';
-    if (looksPorData[key]) {
-        lookContainer.innerHTML = `
-          <div class="lookContainer">
-            <div class="lookTitle">Looks para o dia ${dd}/${mm}/${yyyy}</div>
-            <div class="lookMsg">Esse dia tem ${looksPorData[key].length} look${looksPorData[key].length > 1 ? 's' : ''}</div>
-            <div class="lookList">
-              ${looksPorData[key].map(look => `
-                <div class="lookCardCal" onclick="openImgModal('${look.imagem_uri ? look.imagem_uri.replace(/'/g, "\\'") : ''}')">
-                  <img src="${look.imagem_uri || '../assets/clothes-placeholder.jpg'}" alt="Look" />
-                  <div>
-                    <div class="lookCardCal-title">${look.titulo}</div>
-                    <div class="lookCardCal-desc">${look.descricao || ''}</div>
-                  </div>
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `;
-    } else {
-        lookContainer.innerHTML = `
-          <div class="lookContainer">
-            <div class="lookTitle">Looks para o dia ${dd}/${mm}/${yyyy}</div>
-            <div class="lookMsg">Nenhum look registrado para esse dia ainda.</div>
-          </div>
-        `;
+function atualizarData() {
+    const val = document.getElementById('inputDate').value;
+    if (val) { 
+        const [yyyy, mm, dd] = val.split('-'); 
+        document.getElementById('dataSelecionada').textContent = `${dd}/${mm}/${yyyy}`; 
     }
 }
+function salvarLook(e) {
+    e.preventDefault();
+    const titulo = document.getElementById('inputTitulo').value.trim();
+    const descricao = document.getElementById('inputDesc').value.trim();
+    const data_uso = document.getElementById('inputDate').value;
 
-function openImgModal(imgUri) {
-    if (!imgUri) return;
-    document.getElementById('modalImgBig').src = imgUri;
-    document.getElementById('modalImgOverlay').classList.add('active');
+    let imagem_uri = '';
+    const imgElem = document.getElementById('modalImagePreview');
+    if (imgElem && imgElem.src && imgElem.style.display !== 'none') { 
+        imagem_uri = imgElem.src; 
+    }
+
+    if (!imagem_uri || !titulo) { 
+        alert('Preencha todos os campos e selecione uma imagem.'); 
+        return; 
+    }
+
+    const novoLook = { 
+        id: 'id' + Date.now() + Math.floor(Math.random() * 9999), 
+        titulo, 
+        descricao, 
+        imagem_uri, 
+        data_uso, 
+    };
+
+    const looks = getLooks();
+
+    // 🔴 LIMITADOR DE 10 LOOKS
+    if (looks.length >= 10) {
+        alert("Você já atingiu o limite de 10 looks salvos. Exclua um para adicionar outro.");
+        return;
+    }
+
+    looks.unshift(novoLook); 
+    saveLooks(looks); 
+    closeModal(); 
+    renderLooksList();
 }
-function closeImgModal(e) {
-    if (e && e.stopPropagation) e.stopPropagation();
-    document.getElementById('modalImgOverlay').classList.remove('active');
-    document.getElementById('modalImgBig').src = "";
+window.onclick = function (e) {
+    if (e.target === document.getElementById('addLookModal')) closeModal();
+    if (e.target === document.getElementById('viewLookModal')) closeViewModal();
 }
 
+// ----- MODAL VIEW & DELETE -----
+let lookToDeleteId = null;
+function openViewModal(look) {
+    lookToDeleteId = look.id;
+    document.getElementById('viewModalImg').src = look.imagem_uri || 'https://placehold.co/120x120?text=Look';
+    document.getElementById('viewModalTitle').textContent = look.titulo;
+    document.getElementById('viewModalDesc').textContent = look.descricao || '';
+    document.getElementById('viewModalDate').textContent = "Uso: " + formatDateBR(look.data_uso);
+    document.getElementById('viewLookModal').classList.add('active');
+}
+function closeViewModal() {
+    document.getElementById('viewLookModal').classList.remove('active');
+    lookToDeleteId = null;
+}
+function confirmDeleteLook() {
+    if (!lookToDeleteId) return;
+    if (confirm("Tem certeza que deseja excluir este look?")) {
+        let looks = getLooks();
+        looks = looks.filter(l => l.id !== lookToDeleteId);
+        saveLooks(looks);
+        closeViewModal();
+        renderLooksList();
+    }
+}
+
+// ----- LISTAR LOOKS -----
+function renderLooksList() {
+    const looks = getLooks();
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const looksGrid = document.getElementById('looksGrid');
+    const emptyText = document.getElementById('emptyText');
+    const filtered = looks.filter(l => l.titulo.toLowerCase().includes(q));
+    if (!filtered.length) { 
+        looksGrid.innerHTML = ""; 
+        emptyText.style.display = ''; 
+        return; 
+    }
+    emptyText.style.display = 'none';
+    looksGrid.innerHTML = filtered.map(look => `
+        <div class="lookCard" onclick='openViewModal(${JSON.stringify(look)})'>
+          <img src="${look.imagem_uri || '../assets/clothes-placeholder.jpg'}" alt="Look" />
+          <div class="lookCard-title">${look.titulo}</div>
+          <div class="lookCard-date">${formatDateBR(look.data_uso)}</div>
+          ${look.descricao ? `<div class="lookCard-desc">${look.descricao}</div>` : ""}
+        </div>
+      `).join('');
+}
+function formatDateBR(isoDate) { 
+    if (!isoDate) return ''; 
+    const dt = new Date(isoDate + 'T00:00:00'); 
+    return dt.toLocaleDateString('pt-BR'); 
+}
 
 // Inicializa
-renderCalendar(currentMonth, currentYear);
-
-// Atualiza as bolinhas ao cadastrar look novo (opcional, caso outro tab mexa)
-window.addEventListener('storage', () => {
-    looksPorData = groupLooksByDate(getLooks());
-    renderCalendar(currentMonth, currentYear);
-    document.getElementById('lookContainer').innerHTML = "";
-});
+renderLooksList();
