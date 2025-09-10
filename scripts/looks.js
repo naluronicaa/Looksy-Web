@@ -1,6 +1,11 @@
 // ----- LOCALSTORAGE -----
-function getLooks() { const data = localStorage.getItem('looksDemo'); return data ? JSON.parse(data) : []; }
-function saveLooks(looks) { localStorage.setItem('looksDemo', JSON.stringify(looks)); }
+function getLooks() { 
+    const data = localStorage.getItem('looksDemo'); 
+    return data ? JSON.parse(data) : []; 
+}
+function saveLooks(looks) { 
+    localStorage.setItem('looksDemo', JSON.stringify(looks)); 
+}
 
 // ----- MODAL CADASTRO -----
 function openModal() {
@@ -8,11 +13,15 @@ function openModal() {
     document.getElementById('addLookForm').reset();
     document.getElementById('modalImagePreview').style.display = 'none';
     const hoje = new Date();
-    const yyyy = hoje.getFullYear(); const mm = String(hoje.getMonth() + 1).padStart(2, '0'); const dd = String(hoje.getDate()).padStart(2, '0');
+    const yyyy = hoje.getFullYear(); 
+    const mm = String(hoje.getMonth() + 1).padStart(2, '0'); 
+    const dd = String(hoje.getDate()).padStart(2, '0');
     document.getElementById('inputDate').value = `${yyyy}-${mm}-${dd}`;
     document.getElementById('dataSelecionada').textContent = `${dd}/${mm}/${yyyy}`;
 }
-function closeModal() { document.getElementById('addLookModal').classList.remove('active'); }
+function closeModal() { 
+    document.getElementById('addLookModal').classList.remove('active'); 
+}
 function handleImageChange(event) {
     const file = event.target.files[0];
     if (!file) return;
@@ -22,7 +31,7 @@ function handleImageChange(event) {
         const img = new window.Image();
         img.onload = function () {
             // -- REDIMENSIONAR --
-            const MAX_WIDTH = 700; // ajuste como quiser
+            const MAX_WIDTH = 700; 
             const MAX_HEIGHT = 700;
             let width = img.width;
             let height = img.height;
@@ -44,7 +53,7 @@ function handleImageChange(event) {
             ctx.drawImage(img, 0, 0, width, height);
 
             // -- JPEG compacto --
-            const base64 = canvas.toDataURL('image/jpeg', 0.85); // 0.85 é qualidade (0 a 1)
+            const base64 = canvas.toDataURL('image/jpeg', 0.85); 
             document.getElementById('modalImagePreview').src = base64;
             document.getElementById('modalImagePreview').style.display = '';
             document.getElementById('modalImagePreview').alt = 'Imagem selecionada';
@@ -57,22 +66,53 @@ function handleImageChange(event) {
     reader.readAsDataURL(file);
 }
 
-function abrirDataPicker() { document.getElementById('inputDate').showPicker(); }
+function abrirDataPicker() { 
+    document.getElementById('inputDate').showPicker(); 
+}
 function atualizarData() {
     const val = document.getElementById('inputDate').value;
-    if (val) { const [yyyy, mm, dd] = val.split('-'); document.getElementById('dataSelecionada').textContent = `${dd}/${mm}/${yyyy}`; }
+    if (val) { 
+        const [yyyy, mm, dd] = val.split('-'); 
+        document.getElementById('dataSelecionada').textContent = `${dd}/${mm}/${yyyy}`; 
+    }
 }
 function salvarLook(e) {
     e.preventDefault();
     const titulo = document.getElementById('inputTitulo').value.trim();
     const descricao = document.getElementById('inputDesc').value.trim();
     const data_uso = document.getElementById('inputDate').value;
+
     let imagem_uri = '';
     const imgElem = document.getElementById('modalImagePreview');
-    if (imgElem && imgElem.src && imgElem.style.display !== 'none') { imagem_uri = imgElem.src; }
-    if (!imagem_uri || !titulo) { alert('Preencha todos os campos e selecione uma imagem.'); return; }
-    const novoLook = { id: 'id' + Date.now() + Math.floor(Math.random() * 9999), titulo, descricao, imagem_uri, data_uso, };
-    const looks = getLooks(); looks.unshift(novoLook); saveLooks(looks); closeModal(); renderLooksList();
+    if (imgElem && imgElem.src && imgElem.style.display !== 'none') { 
+        imagem_uri = imgElem.src; 
+    }
+
+    if (!imagem_uri || !titulo) { 
+        alert('Preencha todos os campos e selecione uma imagem.'); 
+        return; 
+    }
+
+    const novoLook = { 
+        id: 'id' + Date.now() + Math.floor(Math.random() * 9999), 
+        titulo, 
+        descricao, 
+        imagem_uri, 
+        data_uso, 
+    };
+
+    const looks = getLooks();
+
+    // 🔴 LIMITADOR DE 10 LOOKS
+    if (looks.length >= 10) {
+        alert("Você já atingiu o limite de 10 looks salvos. Exclua um para adicionar outro.");
+        return;
+    }
+
+    looks.unshift(novoLook); 
+    saveLooks(looks); 
+    closeModal(); 
+    renderLooksList();
 }
 window.onclick = function (e) {
     if (e.target === document.getElementById('addLookModal')) closeModal();
@@ -111,7 +151,11 @@ function renderLooksList() {
     const looksGrid = document.getElementById('looksGrid');
     const emptyText = document.getElementById('emptyText');
     const filtered = looks.filter(l => l.titulo.toLowerCase().includes(q));
-    if (!filtered.length) { looksGrid.innerHTML = ""; emptyText.style.display = ''; return; }
+    if (!filtered.length) { 
+        looksGrid.innerHTML = ""; 
+        emptyText.style.display = ''; 
+        return; 
+    }
     emptyText.style.display = 'none';
     looksGrid.innerHTML = filtered.map(look => `
         <div class="lookCard" onclick='openViewModal(${JSON.stringify(look)})'>
@@ -122,7 +166,11 @@ function renderLooksList() {
         </div>
       `).join('');
 }
-function formatDateBR(isoDate) { if (!isoDate) return ''; const dt = new Date(isoDate + 'T00:00:00'); return dt.toLocaleDateString('pt-BR'); }
+function formatDateBR(isoDate) { 
+    if (!isoDate) return ''; 
+    const dt = new Date(isoDate + 'T00:00:00'); 
+    return dt.toLocaleDateString('pt-BR'); 
+}
 
 // Inicializa
 renderLooksList();
